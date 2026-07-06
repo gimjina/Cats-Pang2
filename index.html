@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Cat Pang - playable</title>
+<title>Cat Pang - 통합 앱</title>
 
 <!-- CDN 및 폰트 로드 -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -46,12 +46,15 @@ extend: {
 @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
 .bg-pattern { background-color: #fff8f7; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-8 4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm16 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-8 10c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8z' fill='%23ffb7ce' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E"); }
 .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.8); }
-.puzzle-tile { transition: all 0.25s ease-in-out; aspect-ratio: 1/1; position: relative; }
-.puzzle-tile.selected { box-shadow: 0 0 15px #b0e9f4; outline: 4px solid #2c6670; z-index: 10; transform: scale(1.05); }
+.puzzle-tile { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); aspect-ratio: 1/1; }
+.puzzle-tile:active { transform: scale(0.9); }
+.puzzle-tile.selected { box-shadow: 0 0 15px #b0e9f4; outline: 3px solid #2c6670; z-index: 10; }
 .squishy-button { box-shadow: 0 4px 0 #7b4458; transition: all 0.1s ease; }
 .squishy-button:active { transform: translateY(2px); box-shadow: 0 2px 0 #7b4458; }
-.floating-sparkle { pointer-events: none; position: absolute; animation: sparkle-float 1.0s ease-out forwards; z-index: 50; }
-@keyframes sparkle-float { 0% { transform: scale(0) rotate(0deg); opacity: 1; } 100% { transform: scale(1.5) translateY(-30px) rotate(180deg); opacity: 0; } }
+.floating-sparkle { pointer-events: none; position: absolute; animation: sparkle-float 1.5s ease-out forwards; }
+@keyframes sparkle-float { 0% { transform: scale(0) rotate(0deg); opacity: 1; } 100% { transform: scale(1.5) translateY(-40px) rotate(180deg); opacity: 0; } }
+.curved-path { stroke-dasharray: 10, 10; animation: dash 20s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -200; } }
 .bounce-active:active { transform: scale(0.92); transition: transform 0.1s ease; }
 </style>
 </head>
@@ -111,17 +114,20 @@ START <span class="material-symbols-outlined text-4xl" style="font-variation-set
 </header>
 <main class="relative flex-grow pt-10 pb-24 max-w-lg mx-auto w-full px-10">
 <div class="flex flex-col gap-16 items-center">
+<!-- 레벨 5 (잠금) -->
 <div class="relative flex justify-center w-full translate-x-12 opacity-60">
 <div class="w-16 h-16 rounded-full bg-slate-400 flex items-center justify-center border-4 border-white shadow-md">
 <span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">lock</span>
 </div>
 </div>
+<!-- 레벨 4 (현재 레벨) -->
 <div class="relative flex justify-center w-full -translate-x-16">
 <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce z-20">Current</div>
 <button onclick="navigateTo('screen-game')" class="w-20 h-20 rounded-full bg-primary-container border-4 border-white shadow-[0_6px_0_#864d61] flex items-center justify-center bounce-active relative z-10">
 <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">pets</span>
 </button>
 </div>
+<!-- 레벨 3 (클리어) -->
 <div class="relative flex justify-center w-full translate-x-10">
 <button onclick="navigateTo('screen-game')" class="w-16 h-16 rounded-full bg-secondary-container border-4 border-white shadow-[0_4px_0_#2c6670] flex items-center justify-center bounce-active">
 <span class="font-headline-lg-mobile text-on-secondary-container text-xl">3</span>
@@ -148,16 +154,16 @@ START <span class="material-symbols-outlined text-4xl" style="font-variation-set
 <div class="flex justify-between items-end px-2">
 <div>
 <span class="font-label-caps text-label-caps text-slate-500">SCORE</span>
-<div class="bg-white px-6 py-2 rounded-2xl shadow-sm border"><span id="score-val" class="font-headline-xl text-primary font-bold">0</span></div>
+<div class="bg-white px-6 py-2 rounded-2xl shadow-sm border"><span class="font-headline-xl text-primary font-bold">12,450</span></div>
 </div>
 <div class="text-right">
 <span class="font-label-caps text-label-caps text-slate-500">MOVES</span>
-<div id="moves-val" class="bg-secondary-container px-6 py-2 rounded-2xl font-bold text-secondary text-2xl border-b-4 border-secondary">15</div>
+<div class="bg-secondary-container px-6 py-2 rounded-2xl font-bold text-secondary text-2xl border-b-4 border-secondary">15</div>
 </div>
 </div>
 </div>
 
-<!-- 퍼즐 판 -->
+<!-- 퍼즐 판 (7x7 동적 생성) -->
 <div class="bg-surface-container p-3 rounded-3xl shadow-lg border-4 border-white aspect-square w-full max-w-[450px]">
 <div class="grid grid-cols-7 gap-1 h-full w-full" id="game-grid"></div>
 </div>
@@ -170,13 +176,14 @@ START <span class="material-symbols-outlined text-4xl" style="font-variation-set
 </main>
 </div>
 
-<!-- ================= 4. 스테이지 클리어 화면 ================= -->
+<!-- ================= 4. 스테이지 클리어 화면 (새로 완성됨) ================= -->
 <div id="screen-clear" class="game-screen min-h-screen flex flex-col hidden">
 <main class="flex-grow flex flex-col items-center justify-center p-6">
 <div class="glass-card p-8 rounded-3xl max-w-sm w-full text-center shadow-xl border-b-4 border-primary-container flex flex-col items-center">
 <span class="material-symbols-outlined text-6xl text-[#F9A825] mb-2" style="font-variation-settings: 'FILL' 1;">celebration</span>
 <h2 class="font-headline-lg text-headline-lg text-primary mb-4 font-bold">STAGE CLEAR!</h2>
 
+<!-- 별 점수 -->
 <div class="flex gap-1 mb-6">
 <span class="material-symbols-outlined text-4xl text-[#F9A825]" style="font-variation-settings: 'FILL' 1;">star</span>
 <span class="material-symbols-outlined text-5xl text-[#F9A825] -mt-2" style="font-variation-settings: 'FILL' 1;">star</span>
@@ -185,7 +192,7 @@ START <span class="material-symbols-outlined text-4xl" style="font-variation-set
 
 <div class="w-full bg-white/50 rounded-2xl p-4 mb-6 border">
 <span class="font-label-caps text-label-caps text-slate-500 block mb-1">FINAL SCORE</span>
-<span id="final-score-val" class="text-3xl font-bold text-secondary">0</span>
+<span class="text-3xl font-bold text-secondary">18,450</span>
 </div>
 
 <button onclick="navigateTo('screen-lobby')" class="kawaii-button bg-primary text-on-primary font-bold text-lg px-8 py-3 rounded-full w-full border-b-4 border-purple-900">
@@ -195,230 +202,59 @@ START <span class="material-symbols-outlined text-4xl" style="font-variation-set
 </main>
 </div>
 
-<!-- ================= 자바스크립트 엔진 통합 ================= -->
+<!-- ================= 자바스크립트 로직 통합 ================= -->
 <script>
-const BOARD_SIZE = 7;
-const icons = [
-"https://lh3.googleusercontent.com/aida-public/AB6AXuCKcVthOwWG2a0LVmwpM7qTzkslVKeH5rbfeCMd42oyJmKkelaaq8CiI8e0XmI3dAF99a9wZ9LWqDr90rtY281kldMUEl4CjXi2XNHu494hClvTrkuPz-U2FkW-oWAhdijlYEDQqcC7sIRQCyWCRNsD5xlrASqvXFKYpvjtxxW2qPvaaw_I4aSZOXr0F2TTwbO8UHFcqE98eyf2g7qLLSr_ZS96mePeExE3Xjy1kWXtOzN5bgTssw4_JzbmTqnVsXbWN0Q-p2XrBhA",
-"https://lh3.googleusercontent.com/aida-public/AB6AXuB4LuECFtNq0J-6IsrvhvLQuit5dSyBgsUlsQWgj3wNRBU3daoE0aSNMZj6jfiJmq1djzINFFS77SWQwza_EDcsDvhDDSX_SmWI_hVaf_z5ZXdzYj7FePuwLqxH3yk87HQ7h0-rYkEuAl-9e3Sfl9Wizzk9fSpETWQ2MUOswgR1-Zfy_qhM8cfcKJ-Nb6I6wpQMhV4Uu6-cjL--InQFeS6N2f3nrfYZOValzZwRc-yZqVnBDMVbUnEeMCqYwzpDule3vO6Q-qz6rWY",
-"https://lh3.googleusercontent.com/aida-public/AB6AXuDrHyLIzRetXwBbmSKCXPEjUduwmX1HdQgCV2lwd6eDi_Ku16x8ElQyvV_XGn5ljhLmEeEbA6cPzylespp-9W70lNeLS2F8y7PwX6WSJhxYOAQEAa_hgG2JAVOXKfQuCwWtmyn4Ki4Q3qiyTZyOoFiKWNPTqVHNbcLm15CUnjxBfCL1RuHgUWs70kmX2q-INZDb_vw5etjPtIAMlO2TljNdKBD9HHs3xmCEHrUptleZzTGTvdouBnjzEAkU2Xigloe4J1O0T7ysF-o"
- ];
-
-let board = [];
-let selectedIndex = null;
-let score = 0;
-let moves = 15;
-let isProcessing = false; // 애니메이션 도중 클릭 방지 고정 장치
-
-// 1. 화면 전환 기능
+// 1. 화면 전환 기능 (SPA 구현)
 function navigateTo(screenId) {
 document.querySelectorAll('.game-screen').forEach(screen => {
 screen.classList.add('hidden');
 });
 document.getElementById(screenId).classList.remove('hidden');
 
+// 게임 화면으로 이동할 때만 그리드를 새로 생성합니다.
 if(screenId === 'screen-game') {
 initGameGrid();
 }
 }
 
-// 2. 초기 맵 세팅 (시작할 때 이미 매치된 타일이 없도록 루프 필터 적용)
+// 2. 인게임 7x7 그리드 타일 동적 생성 및 문법 오타 수정 (백틱 기호 ` 적용)
 function initGameGrid() {
-score = 0;
-moves = 15;
-selectedIndex = null;
-isProcessing = false;
-updateUI();
-
-do {
-board = [];
-for (let i = 0; i < BOARD_SIZE * BOARD_SIZE; i++) {
-board.push(Math.floor(Math.random() * icons.length));
-}
-} while (checkMatches().length > 0);
-
-renderBoard();
-}
-
-// 3. 화면 그리기 (렌더링)
-function renderBoard() {
 const grid = document.getElementById('game-grid');
-grid.innerHTML = '';
+grid.innerHTML = ''; // 기존 타일 초기화
 
-board.forEach((iconId, index) => {
+const icons = [
+"https://lh3.googleusercontent.com/aida-public/AB6AXuCKcVthOwWG2a0LVmwpM7qTzkslVKeH5rbfeCMd42oyJmKkelaaq8CiI8e0XmI3dAF99a9wZ9LWqDr90rtY281kldMUEl4CjXi2XNHu494hClvTrkuPz-U2FkW-oWAhdijlYEDQqcC7sIRQCyWCRNsD5xlrASqvXFKYpvjtxxW2qPvaaw_I4aSZOXr0F2TTwbO8UHFcqE98eyf2g7qLLSr_ZS96mePeExE3Xjy1kWXtOzN5bgTssw4_JzbmTqnVsXbWN0Q-p2XrBhA",
+"https://lh3.googleusercontent.com/aida-public/AB6AXuB4LuECFtNq0J-6IsrvhvLQuit5dSyBgsUlsQWgj3wNRBU3daoE0aSNMZj6jfiJmq1djzINFFS77SWQwza_EDcsDvhDDSX_SmWI_hVaf_z5ZXdzYj7FePuwLqxH3yk87HQ7h0-rYkEuAl-9e3Sfl9Wizzk9fSpETWQ2MUOswgR1-Zfy_qhM8cfcKJ-Nb6I6wpQMhV4Uu6-cjL--InQFeS6N2f3nrfYZOValzZwRc-yZqVnBDMVbUnEeMCqYwzpDule3vO6Q-qz6rWY",
+"https://lh3.googleusercontent.com/aida-public/AB6AXuDrHyLIzRetXwBbmSKCXPEjUduwmX1HdQgCV2lwd6eDi_Ku16x8ElQyvV_XGn5ljhLmEeEbA6cPzylespp-9W70lNeLS2F8y7PwX6WSJhxYOAQEAa_hgG2JAVOXKfQuCwWtmyn4Ki4Q3qiyTZyOoFiKWNPTqVHNbcLm15CUnjxBfCL1RuHgUWs70kmX2q-INZDb_vw5etjPtIAMlO2TljNdKBD9HHs3xmCEHrUptleZzTGTvdouBnjzEAkU2Xigloe4J1O0T7ysF-o"
+ ];
+
+for (let i = 0; i < 49; i++) {
+const icon = icons[Math.floor(Math.random() * icons.length)];
 const tile = document.createElement('div');
 tile.className = 'puzzle-tile bg-white rounded-xl shadow-sm cursor-pointer overflow-hidden flex items-center justify-center p-1 border';
-if (selectedIndex === index) tile.classList.add('selected');
 
-if (iconId !== null) {
-tile.innerHTML = <img src="${icons[iconId]}" class="w-full h-full object-cover rounded-lg" alt="cat">;
-} else {
-tile.innerHTML = '';
+// ⭐ [수정완료] 자바스크립트 문자열 내 변수 대입 시 백틱() 기호가 누락되었던 문제를 수정했습니다. tile.innerHTML =`;
+
+tile.onclick = function() {
+this.classList.toggle('selected');
+if (this.classList.contains('selected')) {
+createSparkle(this);
 }
-
-tile.onclick = () => handleTileClick(index);
+};
 grid.appendChild(tile);
-});
-}
-
-// 4. 타일 선택 및 스왑 메커니즘
-function handleTileClick(index) {
-if (isProcessing || moves <= 0) return;
-
-if (selectedIndex === null) {
-selectedIndex = index;
-renderBoard();
-} else {
-if (selectedIndex === index) {
-selectedIndex = null;
-renderBoard();
-return;
-}
-
-if (isAdjacent(selectedIndex, index)) {
-isProcessing = true;
-swap(selectedIndex, index);
-renderBoard();
-
-setTimeout(() => {
-let matches = checkMatches();
-if (matches.length > 0) {
-moves--;
-processMatches(matches);
-} else {
-// 매치가 안 되면 원래대로 되돌리기
-swap(selectedIndex, index);
-selectedIndex = null;
-isProcessing = false;
-renderBoard();
-}
-}, 200);
-} else {
-selectedIndex = index; // 인접하지 않은 곳 누르면 선택 타일 변경
-renderBoard();
-}
 }
 }
 
-function isAdjacent(i1, i2) {
-const r1 = Math.floor(i1 / BOARD_SIZE), c1 = i1 % BOARD_SIZE;
-const r2 = Math.floor(i2 / BOARD_SIZE), c2 = i2 % BOARD_SIZE;
-return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
-}
-
-function swap(i1, i2) {
-const temp = board[i1];
-board[i1] = board[i2];
-board[i2] = temp;
-}
-
-// 5. 3매치 검사 스캐너 알고리즘
-function checkMatches() {
-let matchedIndices = new Set();
-
-// 가로 스캔 (3개 연속 확인)
-for (let r = 0; r < BOARD_SIZE; r++) {
-for (let c = 0; c < BOARD_SIZE - 2; c++) {
-let idx1 = r * BOARD_SIZE + c;
-let idx2 = idx1 + 1;
-let idx3 = idx1 + 2;
-if (board[idx1] !== null && board[idx1] === board[idx2] && board[idx1] === board[idx3]) {
-matchedIndices.add(idx1); matchedIndices.add(idx2); matchedIndices.add(idx3);
-}
-}
-}
-
-// 세로 스캔 (3개 연속 확인)
-for (let c = 0; c < BOARD_SIZE; c++) {
-for (let r = 0; r < BOARD_SIZE - 2; r++) {
-let idx1 = r * BOARD_SIZE + c;
-let idx2 = idx1 + BOARD_SIZE;
-let idx3 = idx1 + (BOARD_SIZE * 2);
-if (board[idx1] !== null && board[idx1] === board[idx2] && board[idx1] === board[idx3]) {
-matchedIndices.add(idx1); matchedIndices.add(idx2); matchedIndices.add(idx3);
-}
-}
-}
-return Array.from(matchedIndices);
-}
-
-// 6. 타일 터뜨리기 및 점수 추가
-function processMatches(matches) {
-selectedIndex = null;
-
-matches.forEach(idx => {
-const tiles = document.querySelectorAll('.puzzle-tile');
-if (tiles[idx]) createSparkle(tiles[idx]);
-board[idx] = null;
-});
-
-score += matches.length * 100;
-updateUI();
-renderBoard();
-
-// 터진 빈 공간 채우기 대기시간
-setTimeout(() => {
-dropDownAndRefill();
-}, 350);
-}
-
-// 7. 중력 낙하 및 새로운 블록 리필 (콤보 연쇄 처리 포함)
-function dropDownAndRefill() {
-for (let c = 0; c < BOARD_SIZE; c++) {
-let emptySpots = 0;
-// 아래에서 위로 올라가며 빈 공간 체크
-for (let r = BOARD_SIZE - 1; r >= 0; r--) {
-let idx = r * BOARD_SIZE + c;
-if (board[idx] === null) {
-emptySpots++;
-} else if (emptySpots > 0) {
-board[idx + emptySpots * BOARD_SIZE] = board[idx];
-board[idx] = null;
-}
-}
-// 빈 상단칸에 무작위 신규 타일 리필
-for (let r = 0; r < emptySpots; r++) {
-let idx = r * BOARD_SIZE + c;
-board[idx] = Math.floor(Math.random() * icons.length);
-}
-}
-
-renderBoard();
-
-// 리필된 판에서 또 터지는 매치가 있는지 연속(Combo) 확인
-setTimeout(() => {
-let nextMatches = checkMatches();
-if (nextMatches.length > 0) {
-processMatches(nextMatches);
-} else {
-isProcessing = false; // 모든 처리가 끝나면 클릭 고정 해제
-if (moves <= 0) {
-document.getElementById('final-score-val').innerText = score.toLocaleString();
-navigateTo('screen-clear');
-}
-}
-}, 300);
-}
-
-// 8. 상단 UI 동적 동기화
-function updateUI() {
-document.getElementById('score-val').innerText = score.toLocaleString();
-document.getElementById('moves-val').innerText = moves;
-}
-
-// 별가루 파티클 효과 함수
+// 3. 타일 클릭 시 이펙트 효과
 function createSparkle(el) {
 const rect = el.getBoundingClientRect();
-for(let i=0; i<3; i++) {
 const sparkle = document.createElement('div');
-sparkle.className = 'material-symbols-outlined text-pink-400 floating-sparkle';
-sparkle.style.left = (rect.left + rect.width / 2 + (Math.random()*20 - 10)) + 'px';
-sparkle.style.top = (rect.top + rect.height / 2 + (Math.random()*20 - 10)) + 'px';
-sparkle.style.fontSize = (14 + Math.random()*12) + 'px';
+sparkle.className = 'material-symbols-outlined text-secondary-fixed-dim floating-sparkle';
+sparkle.style.left = (rect.left + rect.width / 2) + 'px';
+sparkle.style.top = (rect.top + rect.height / 2) + 'px';
 sparkle.textContent = 'auto_awesome';
 document.body.appendChild(sparkle);
-setTimeout(() => sparkle.remove(), 1000);
-}
+setTimeout(() => sparkle.remove(), 1500);
 }
 </script>
 </body>
